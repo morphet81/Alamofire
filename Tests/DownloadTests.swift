@@ -77,7 +77,7 @@ class DownloadResponseTestCase: BaseTestCase {
     }()
 
     var randomCachesFileURL: NSURL {
-        return cachesURL.URLByAppendingPathComponent("\(NSUUID().UUIDString).json")
+        return cachesURL.URLByAppendingPathComponent("\(NSUUID().UUIDString).json")!
     }
 
     func testDownloadRequest() {
@@ -180,7 +180,7 @@ class DownloadResponseTestCase: BaseTestCase {
 
         // When
         let download = Alamofire.download(.GET, URLString) { _, _ in
-            return fileURL
+            return fileURL!
         }
         download.progress { bytesRead, totalBytesRead, totalBytesExpectedToRead in
             let bytes = (bytes: bytesRead, totalBytes: totalBytesRead, totalBytesExpected: totalBytesExpectedToRead)
@@ -232,7 +232,7 @@ class DownloadResponseTestCase: BaseTestCase {
 
         if let
             lastByteValue = byteValues.last,
-            lastProgressValue = progressValues.last
+            let lastProgressValue = progressValues.last
         {
             let byteValueFractionalCompletion = Double(lastByteValue.totalBytes) / Double(lastByteValue.totalBytesExpected)
             let progressValueFractionalCompletion = Double(lastProgressValue.0) / Double(lastProgressValue.1)
@@ -248,7 +248,7 @@ class DownloadResponseTestCase: BaseTestCase {
         }
 
         do {
-            try fileManager.removeItemAtURL(fileURL)
+            try fileManager.removeItemAtURL(fileURL!)
         } catch {
             XCTFail("file manager should remove item at URL: \(fileURL)")
         }
@@ -286,9 +286,9 @@ class DownloadResponseTestCase: BaseTestCase {
 
         if let
             data = NSData(contentsOfURL: fileURL),
-            JSONObject = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)),
-            JSON = JSONObject as? [String: AnyObject],
-            args = JSON["args"] as? [String: String]
+            let JSONObject = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)),
+            let JSON = JSONObject as? [String: AnyObject],
+            let args = JSON["args"] as? [String: String]
         {
             XCTAssertEqual(args["foo"], "bar", "foo parameter should equal bar")
         } else {
@@ -328,9 +328,9 @@ class DownloadResponseTestCase: BaseTestCase {
 
         if let
             data = NSData(contentsOfURL: fileURL),
-            JSONObject = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)),
-            JSON = JSONObject as? [String: AnyObject],
-            headers = JSON["headers"] as? [String: String]
+            let JSONObject = try? NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0)),
+            let JSON = JSONObject as? [String: AnyObject],
+            let headers = JSON["headers"] as? [String: String]
         {
             XCTAssertEqual(headers["Authorization"], "123456", "Authorization parameter should equal 123456")
         } else {
@@ -418,7 +418,7 @@ class DownloadResumeDataTestCase: BaseTestCase {
 
         if let
             responseData = data as? NSData,
-            resumeData = download.resumeData
+            let resumeData = download.resumeData
         {
             XCTAssertEqual(responseData, resumeData, "response data should equal resume data")
         } else {
